@@ -17,7 +17,7 @@ def monitor():
     pir_pin = 27
     led_pin_numbers = [12, 13, 14, 25, 26, 32]
     led_pins = map(lambda number: Pin(number, Pin.OUT), led_pin_numbers)
-    success_seconds = 10
+    success_seconds = 20
     per_second = 3
 
     Pin(12, Pin.OUT).off()
