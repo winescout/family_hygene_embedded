@@ -3,7 +3,7 @@ import wifimgr
 from ota_update.main.ota_updater import OTAUpdater
 
 def download_and_install_update_if_available(wlan):
-    o = OTAUpdater('url-to-your-github-project')
+    o = OTAUpdater('http://github.com/winescout/family_hygene_embedded')
     o.download_and_install_update_if_available(wlan)
 
 def start():
