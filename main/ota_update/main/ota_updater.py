@@ -8,8 +8,8 @@ import machine
 
 class OTAUpdater:
 
-    def __init__(self, github_repo, module='', main_dir='main'):
-        self.http_client = HttpClient()
+    def __init__(self, github_repo, module='', main_dir='main', headers={}):
+        self.http_client = HttpClient(headers=headers)
         self.github_repo = github_repo.rstrip('/').replace('https://github.com', 'https://api.github.com/repos')
         self.main_dir = main_dir
         self.module = module.rstrip('/')
@@ -94,6 +94,7 @@ class OTAUpdater:
         os.rmdir(directory)
 
     def get_version(self, directory, version_file_name='.version'):
+	print("THIE DIR " + directory)
         if version_file_name in os.listdir(directory):
             f = open(directory + '/' + version_file_name)
             version = f.read()
@@ -103,11 +104,16 @@ class OTAUpdater:
 
     def get_latest_version(self):
         latest_release = self.http_client.get(self.github_repo + '/releases/latest')
+        print(latest_release.json())
         version = latest_release.json()['tag_name']
         latest_release.close()
         return version
 
     def download_all_files(self, root_url, version):
+        print("____________________")
+        print(root_url + '?ref=refs/tags/' + version)
+        print("https://api.github.com/repos/winescout/family_hygene_embedded/contents?ref=refs/tags/1.1")
+        print("---------------------")
         file_list = self.http_client.get(root_url + '?ref=refs/tags/' + version)
         for file in file_list.json():
             if file['type'] == 'file':
@@ -169,8 +175,17 @@ class Response:
 
 
 class HttpClient:
+    def __init__(self, headers={}):
+        self._headers = headers
 
     def request(self, method, url, data=None, json=None, headers={}, stream=None):
+        def _write_headers(sock, _headers):
+            print("THE HEADERS")
+            for k in _headers:
+                print(k)
+                print(_headers[k])
+                sock.write(b'{}: {}\r\n'.format(k, _headers[k]))
+
         try:
             proto, dummy, host, path = url.split('/', 3)
         except ValueError:
@@ -200,11 +215,9 @@ class HttpClient:
             if not 'Host' in headers:
                 s.write(b'Host: %s\r\n' % host)
             # Iterate over keys to avoid tuple alloc
-            for k in headers:
-                s.write(k)
-                s.write(b': ')
-                s.write(headers[k])
-                s.write(b'\r\n')
+            _write_headers(s, self._headers)
+            _write_headers(s, headers)
+
             # add user agent
             s.write('User-Agent')
             s.write(b': ')
@@ -264,3 +277,4 @@ class HttpClient:
 
     def delete(self, url, **kw):
         return self.request('DELETE', url, **kw)
+
