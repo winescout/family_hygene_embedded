@@ -27,6 +27,10 @@ class OTAUpdater:
         print('\tLatest version: ', latest_version)
         if latest_version > current_version:
             print('New version available, will download and install on next reboot')
+
+            if('next' in os.listdir(self.module)):
+                os.rmdir(self.modulepath('next'))
+
             os.mkdir(self.modulepath('next'))
             with open(self.modulepath('next/.version_on_reboot'), 'w') as versionfile:
                 versionfile.write(latest_version)
@@ -103,8 +107,8 @@ class OTAUpdater:
         return '0.0'
 
     def get_latest_version(self):
+        print(self.github_repo + '/releases/latest')
         latest_release = self.http_client.get(self.github_repo + '/releases/latest')
-        print(latest_release.json())
         version = latest_release.json()['tag_name']
         latest_release.close()
         return version
@@ -180,10 +184,7 @@ class HttpClient:
 
     def request(self, method, url, data=None, json=None, headers={}, stream=None):
         def _write_headers(sock, _headers):
-            print("THE HEADERS")
             for k in _headers:
-                print(k)
-                print(_headers[k])
                 sock.write(b'{}: {}\r\n'.format(k, _headers[k]))
 
         try:
