@@ -1,10 +1,10 @@
 from main.monitor import monitor
 from main.wifimgr import get_connection
-from main.ota_update.main.ota_updater import OTAUpdater
+from main.ota_updater import OTAUpdater
 
 def download_and_install_update_if_available(wlan):
     print("Checking for updates")
-    token = "6f86eabc59d3034fd96736bc90b93c4c79124e06"
+    token = "db81a2a60f2571facf0aeaa90620ef2f8a15c692"
     o = OTAUpdater('https://github.com/winescout/family_hygene_embedded', headers={'Authorization': 'token {}'.format(token)})
     o.check_for_update_to_install_during_next_reboot()
     o.download_and_install_update_if_available(wlan)
