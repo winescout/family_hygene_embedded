@@ -11,7 +11,6 @@ def update_url(id):
 
 def wash_start(pir_pin):
     led_pin_numbers = [12, 13, 14, 25, 26, 32]
-    led_pins = map(lambda number: Pin(number, Pin.OUT), led_pin_numbers)
     success_seconds = 20
     seconds_active = 0
 
